@@ -55,18 +55,136 @@
     <button>Trigger a Global Error</button>
   </section>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "a71e7d79718a4243877cb224a9fb6878"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+                          
+  <script>
+      class ValidationError  extends Error {
+        constructor(message){
+        super(message);
+        this.name = "ValidationError";
+      }
+    }
     let calculateBtn = document.querySelector('#calculate');
     calculateBtn.addEventListener('click', () => {
       let output = document.querySelector('output');
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try{
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch(err){
+        if(!firstNum.match(/^[0-9]+$/)){
+          throw new ValidationError('First num contains lettter');
+          console.error(err.message);
+        }
+        if(!secondNum.match(/^[0-9]+$/)){
+          throw new ValidationError('Second number contains letter');
+          console.error(err.message);
+        }
+        //if((!firstNum.match(/^[0-9]+$/) || (!secondNum.match(/^[0-9]+$/)))){
+          //throw new ValidationError('Both contain letters');
+          //console.error(err.message);
+        //} 
+      } 
+      finally {
+        console.log('Finished calculating');
+      }
+      TrackJS.track('Testing TrackJS!');
+                    
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
     // TODO - Make buttons functional
+    console.log(errorBtns);
+
+    let consoleLogDemo = errorBtns[0];
+    consoleLogDemo.onclick = function(){
+      console.log("Console Log Demo");
+    } 
+
+
+    let consoleErrorDemo = errorBtns[1];
+    consoleErrorDemo.onclick = function(){
+      console.error("Console Error Demo");
+    }
+
+    let consoleDir = errorBtns[2];
+    consoleDir.onclick = function(){
+      console.dir(consoleErrorDemo);
+    }
+
+    let consoleDirXml = errorBtns[3];
+    consoleDirXml.onclick = function(){
+      console.dirxml(document.body);
+    }
+
+    let consoleGroupStart = errorBtns[4];
+    consoleGroupStart.onclick = function(){
+      console.group('Log Group');
+    }
+
+    let consoleGroupEnd = errorBtns[5];
+    consoleGroupEnd.onclick = function(){
+      console.groupEnd('Log Group');
+    }
+
+
+    let consoleTable = errorBtns[6];
+    consoleTable.onclick = function(){
+      console.table([
+        {
+          name: 'Software Engineering',
+          num: '110',
+        },
+        {
+          name: 'Programming Languages',
+          num: '130',
+
+        },
+
+        {
+
+          name: 'Advanced Software Engineering',
+          num: '112',
+        }
+      ]);
+
+    }
+
+    let consoleStartTime = errorBtns[7];
+    consoleStartTime.onclick = function(){
+      console.time('Time');
+      console.log('Timer Started!');
+    }
+
+    let consoleEndTime = errorBtns[8];
+    consoleEndTime.onclick = function (){
+      console.timeEnd('Time');
+      console.log('Timer Ended!');
+    }
+
+
+    let consoleTrace = errorBtns[9];
+    consoleTrace.onclick = function(){
+
+      const traceTest = () => { deep(); };
+      const deep = () => { deeper(); };
+      const deeper = () => { deepest(); };
+      const deepest = () => { console.trace(); };
+      traceTest();
+    }
+    let consoleGlobalError = errorBtns[10];
+    consoleGlobalError.onclick = function(){
+      window.onerror = function(e){
+        console.log(e);
+      }
+    }
   </script>
 </body>
 </html>
